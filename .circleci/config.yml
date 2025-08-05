@@ -20,9 +20,12 @@ jobs:
             docker build -t docker.io/${DOCKERHUB_USERNAME}/myservice:${CIRCLE_BUILD_NUM} ./microservice
       
       - run:
-          name: Scan with Trivy
+          name: Install and Scan with Trivy
           command: |
-            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+            mkdir -p ~/bin
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b ~/bin
+            echo 'export PATH=$PATH:~/bin' >> $BASH_ENV
+            source $BASH_ENV
             trivy image docker.io/${DOCKERHUB_USERNAME}/myservice:${CIRCLE_BUILD_NUM} || true
       
       - run:
