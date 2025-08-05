@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    IMAGE = "docker.io/your-dockerhub-username/myservice:${BUILD_NUMBER}"
+    IMAGE = "docker.io/Highshow14/myservice:${BUILD_NUMBER}"
   }
   stages {
     stage('Build') {
@@ -22,16 +22,20 @@ pipeline {
         }
       }
     }
-    stage('Update Helm Chart') {
+    stage('Update Helm Chart & Push to GitHub') {
       steps {
-        sh '''
-        sed -i "s/tag:.*/tag: ${BUILD_NUMBER}/" helm-chart/myservice/values.yaml
-        git config --global user.email "jenkins@ci"
-        git config --global user.name "jenkins"
-        git add helm-chart/myservice/values.yaml
-        git commit -m "Update image tag to ${BUILD_NUMBER}"
-        git push
-        '''
+        withCredentials([usernamePassword(credentialsId: 'github-creds', passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
+          sh '''
+            git config --global user.email "jenkins@ci"
+            git config --global user.name "jenkins"
+            git clone https://$GIT_USER:$GIT_PASS@github.com/Highshow14/Microservice.git repo
+            cd repo
+            sed -i "s/tag:.*/tag: ${BUILD_NUMBER}/" helm-chart/myservice/values.yaml
+            git add helm-chart/myservice/values.yaml
+            git commit -m "Update image tag to ${BUILD_NUMBER}"
+            git push origin main
+          '''
+        }
       }
     }
   }
