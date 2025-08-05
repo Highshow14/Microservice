@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/yourusername/your-repo.git
+    repoURL: https://github.com/Highshow14/your-repo.git
     targetRevision: HEAD
     path: helm-chart/myservice
   destination:
