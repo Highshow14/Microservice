@@ -1,0 +1,3 @@
+resources:
+  - ../../helm-chart/myservice/templates/deployment.yaml
+  - ../../helm-chart/myservice/templates/service.yaml

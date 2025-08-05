@@ -1,0 +1,38 @@
+pipeline {
+  agent any
+  environment {
+    IMAGE = "docker.io/your-dockerhub-username/myservice:${BUILD_NUMBER}"
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'docker build -t $IMAGE ./microservice'
+      }
+    }
+    stage('Scan with Trivy') {
+      steps {
+        sh 'trivy image $IMAGE || true'
+      }
+    }
+    stage('Push to Docker Hub') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+          sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+          sh 'docker push $IMAGE'
+        }
+      }
+    }
+    stage('Update Helm Chart') {
+      steps {
+        sh '''
+        sed -i "s/tag:.*/tag: ${BUILD_NUMBER}/" helm-chart/myservice/values.yaml
+        git config --global user.email "jenkins@ci"
+        git config --global user.name "jenkins"
+        git add helm-chart/myservice/values.yaml
+        git commit -m "Update image tag to ${BUILD_NUMBER}"
+        git push
+        '''
+      }
+    }
+  }
+}

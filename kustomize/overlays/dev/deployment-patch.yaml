@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myservice
+spec:
+  replicas: 1  # Override replicas for dev (e.g., scale down)
+  template:
+    spec:
+      containers:
+        - name: myservice
+          env:
+            - name: NODE_ENV
+              value: "development"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"

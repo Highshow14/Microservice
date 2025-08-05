@@ -1,0 +1,18 @@
+{
+    "name": "modern-devops-microservice",
+    "version": "1.0.0",
+    "description": "Node.js microservice for a modern DevOps pipeline",
+    "main": "app.js",
+    "scripts": {
+      "start": "node app.js",
+      "test": "jest"
+    },
+    "dependencies": {
+      "express": "^4.18.2"
+    },
+    "devDependencies": {
+      "jest": "^29.6.1",
+      "supertest": "^6.3.3"
+    }
+  }
+  
